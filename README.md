@@ -18,6 +18,18 @@ fn return_owned_and_referenced<'a>() -> (Vec<u8>, &'a [u8]) {
 }
 ```
 
+위와 같은 예제를 보면, 위의 코드는 컴파일이 되지 않는다.
+왜냐면 v와 v에 의존성이 있는 v의 참조자인 s가 따로 변수화되어 반환될 수 없다.
+borrow checker가 v가 함수의 범위를 벗어나면서 소멸될 때, s가 무효화되기 때문이다.
+
+그렇지만 아래의 코드는 v(o)를 Deref하여 raw pointer의 안전한 참조(주소)를,
+reference필드에, 즉 o의 메모리 값의 주소를 값으로 저장한 다음,
+v에 대한 의존성을 떼어 놓는다.
+즉 reference 필드는 v(o)에 대한 참조(주소)가 아니라, v(o)를 Deref한 메모리 값의
+안전한 참조를 얻어 값으로 저장한다. 즉, OwningRef 커스텀 스마트 포인터의 주소값이 아니라,
+스마트 포인터 내부의 값의 주소값을 reference 필드로 저장한다.
+
+
 This library enables this safe usage by keeping the owner and the reference
 bundled together in a wrapper type that ensure that lifetime constraint:
 
