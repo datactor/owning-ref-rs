@@ -29,6 +29,11 @@ v에 대한 의존성을 떼어 놓는다.
 안전한 참조를 얻어 값으로 저장한다. 즉, OwningRef 커스텀 스마트 포인터의 주소값이 아니라,
 스마트 포인터 내부의 값의 주소값을 reference 필드로 저장한다.
 
+OwningRef는 StableDeref trait이 구현된 타입에만 구현되어 있다.
+여기서 주의해야 할 점은 스칼라 타입과 스칼라like 타입들은 내부의 값이 변하여도 고정된 크기를 가질 수 있지만,
+Vec나 String의 경우 capacity를 넘어설 경우 재할당하여 다른 힙 메모리 주소값으로 변경되기 때문에,
+값이 변경될 경우 reference 필드 값이 dangling pointer가 될 수 있다.
+때문에 OwningRef로 객체를 만든 후에 값을 수정하는 것은 권장되지 않는다.
 
 This library enables this safe usage by keeping the owner and the reference
 bundled together in a wrapper type that ensure that lifetime constraint:
